@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>SST | TACTICAL HUD</title>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@300;700&display=swap');
+
+        body { 
+            margin: 0; background: #000; color: #fff; 
+            font-family: 'Rajdhani', sans-serif; height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+        }
+
+        /* --- Carrousel Néon Arrière-plan --- */
+        #carousel {
+            position: absolute; inset: 0; display: flex;
+            animation: slide 80s linear infinite;
+            gap: 30px; padding: 40px; align-items: center;
+            z-index: 1; opacity: 0.5;
+        }
+        .photo-frame {
+            min-width: 250px; height: 350px;
+            border: 2px solid #ff7eb9;
+            box-shadow: 0 0 20px #ff7eb9, inset 0 0 10px #ff7eb9;
+            border-radius: 12px; background-size: cover;
+            background-position: center;
+        }
+        @keyframes slide { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        /* --- HUD Central --- */
+        .container { 
+            position: relative; z-index: 10; width: 340px; height: 340px; 
+            display: flex; align-items: center; justify-content: center; 
+            background: rgba(0,0,0,0.85); border-radius: 50%;
+            border: 2px solid #ff7eb9;
+            box-shadow: 0 0 50px rgba(0,0,0,1), inset 0 0 30px rgba(255,126,185,0.2);
+        }
+        .ring { position: absolute; border: 2px solid transparent; width: 310px; height: 310px; border-radius: 50%; border-top: 4px solid #fff; animation: spin 4s linear infinite; }
+        .data { 
+            font-family: 'Orbitron'; font-size: 5rem; z-index: 11; 
+            color: #fff; text-shadow: 0 0 10px #ff7eb9, 0 0 20px #ff7eb9, 0 0 30px #ff7eb9;
+            font-weight: 900;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* --- POP-UP (LA CORRECTION EST ICI) --- */
+        #popup { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(15px); }
+        
+        .box { 
+            background: #050505; padding: 30px; border: 2px solid #ff7eb9; 
+            width: 85%; max-width: 450px; text-align: center; border-radius: 20px;
+            box-shadow: 0 0 30px rgba(255, 126, 185, 0.4);
+        }
+
+        /* CETTE RÈGLE FORCE TOUTES LES IMAGES D'ÉNIGMES À LA MÊME TAILLE */
+        #pop-content img { 
+            width: 100% !important; 
+            height: 250px !important; /* Hauteur fixe pour tout le monde */
+            object-fit: cover !important; /* Coupe proprement l'image pour qu'elle remplisse le cadre */
+            border-radius: 12px;
+            border: 1px solid #ff7eb9;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        #pop-title { font-family: 'Orbitron'; color:#fff; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 2px; }
+        
+        .btn-continuer {
+            margin-top:20px; background:transparent; border:2px solid #ff7eb9; 
+            padding:12px 40px; color:#ff7eb9; cursor:pointer; 
+            font-family: 'Orbitron'; border-radius: 50px; font-weight: bold;
+            transition: 0.3s;
+        }
+        .btn-continuer:hover { background: #ff7eb9; color: #000; }
+    </style>
+</head>
+<body>
+
+    <div id="carousel"></div>
+
+    <div class="container">
+        <div class="ring"></div>
+        <div class="data" id="perc-text">0%</div>
+    </div>
+
+    <div id="popup">
+        <div class="box">
+            <h2 id="pop-title"></h2>
+            <div id="pop-content"></div>
+            <button onclick="closePopup()" class="btn-continuer">CONTINUER</button>
+        </div>
+    </div>
+
+    <script>
+        firebase.initializeApp({ databaseURL: "https://missionnalya-default-rtdb.firebaseio.com/" });
+        
+        // Carrousel
+        const carousel = document.getElementById('carousel');
+        const photos = Array.from({length: 19}, (_, i) => `nalya${i + 1}.jpg`).sort(() => Math.random() - 0.5);
+        [...photos, ...photos].forEach(src => {
+            let div = document.createElement('div');
+            div.className = 'photo-frame';
+            div.style.backgroundImage = `url('${src}')`;
+            carousel.appendChild(div);
+        });
+
+        const db = firebase.database();
+        db.ref('mission').on('value', (s) => {
+            const d = s.val();
+            if(d && d.active) {
+                document.getElementById('pop-title').innerText = d.title;
+                document.getElementById('pop-content').innerHTML = d.html;
+                document.getElementById('popup').style.display = 'flex';
+                document.getElementById('perc-text').innerText = d.progress + "%";
+            }
+        });
+        function closePopup() { document.getElementById('popup').style.display = 'none'; db.ref('mission').update({active:false}); }
+    </script>
+</body>
+</html>

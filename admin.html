@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>SST | MISSION CONTROL</title>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&display=swap');
+
+        body { 
+            background: #050505; 
+            color: #ff7eb9; 
+            font-family: 'Segoe UI', sans-serif; 
+            padding: 30px; 
+            max-width: 600px; 
+            margin: auto;
+        }
+
+        h1 { 
+            font-family: 'Orbitron'; 
+            text-align: center; 
+            font-size: 1.5rem; 
+            letter-spacing: 4px; 
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px #ff7eb9;
+        }
+
+        .control-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        button { 
+            width: 100%; 
+            padding: 20px; 
+            background: #111; 
+            border: 1px solid #333; 
+            color: #fff; 
+            cursor: pointer; 
+            text-align: left; 
+            font-size: 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        button:hover { 
+            background: #1a1a1a; 
+            border-color: #ff7eb9; 
+            box-shadow: 0 0 15px rgba(255, 126, 185, 0.4);
+            transform: scale(1.02);
+        }
+
+        button:active {
+            transform: scale(0.98);
+            background: #ff7eb9;
+            color: #000;
+        }
+
+        .perc-badge {
+            background: rgba(255, 126, 185, 0.2);
+            color: #ff7eb9;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-family: 'Orbitron';
+            font-size: 0.8rem;
+        }
+
+        .status {
+            text-align: center;
+            font-size: 0.7rem;
+            margin-top: 20px;
+            color: #444;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>SST CONTROL UNIT</h1>
+
+    <div class="control-panel">
+        <button onclick="step('Pont de Brotonne', '<img src=\'Bretonne.jpg\' class=\'img-pop\'>Inauguré en 1977, ce géant de béton fut longtemps le pont à haubans le plus long du monde ! Véritable chef-d\'œuvre d\'ingénierie, il surplombe la Seine de 50 mètres, offrant un premier envol spectaculaire vers notre destination.', 12)">
+            1. Pont de Brotonne <span class="perc-badge">12%</span>
+        </button>
+
+        <button onclick="step('Bourg-Achard', '<img src=\'BourgAchard.jpg\' class=\'img-pop\'>Ancien relais de poste incontournable sous l\'Ancien Régime, on y changeait les chevaux pour galoper vers Paris. Aujourd\'hui, nos chevaux sont sous le capot, mais l\'élan reste le même pour nous propulser vers notre destination.', 25)">
+            2. Bourg-Achard <span class="perc-badge">25%</span>
+        </button>
+
+        <button onclick="step('Rouen', '<img src=\'Rouen.jpg\' class=\'img-pop\'>Bienvenue dans la Cité des cent clochers ! De Jeanne d\'Arc à Monet, Rouen a vu défiler les plus grands noms de France. Nous contournons cette perle médiévale pour filer, comme une flèche, vers notre destination.', 38)">
+            3. Rouen <span class="perc-badge">38%</span>
+        </button>
+
+        <button onclick="step('Pacy-sur-Eure', '<img src=\'PacySurEure.jpg\' class=\'img-pop\'>Avis aux gourmands : c\'est ici qu\'en 1963, François Boursin a inventé son célèbre fromage ail et fines herbes ! Une escale pleine de saveurs qui nous donne l\'énergie nécessaire pour maintenir le cap vers notre destination.', 50)">
+            4. Pacy-sur-Eure <span class="perc-badge">50%</span>
+        </button>
+
+        <button onclick="step('Mantes-la-Jolie', '<img src=\'MantesLaJoly.webp\' class=\'img-pop\'>Le saviez-vous ? C\'est le roi Henri IV qui lui a donné ce nom en écrivant à sa maîtresse : « Je viens à Mantes, ma jolie ». Un arrêt royal sur cet axe historique qui nous rapproche de notre destination.', 62)">
+            5. Mantes-la-Jolie <span class="perc-badge">62%</span>
+        </button>
+
+        <button onclick="step('Epône', '<img src=\'ORCEpone.jpg\' class=\'img-pop\'>Avis aux passionnés : nous traversons les terres du célèbre Team VTT ORC \Epône ! Même si mon cœur de pilote reste fidèle à Lillebonne, impossible de ne pas saluer ce club mythique du secteur. Un clin d\'œil aux sentiers avant de reprendre notre trajectoire vers notre destination.', 75)">
+            6. Epône <span class="perc-badge">75%</span>
+        </button>
+
+        <button onclick="step('Orgeval', '<img src=\'Orgeval.jpg\' class=\'img-pop\'>Surnommée la cité des jardins, Orgeval était autrefois le fournisseur officiel de fruits et fleurs pour les tables des châteaux alentours. Un parfum de victoire commence à se faire sentir alors que nous touchons presque au but de notre destination.', 88)">
+            7. Orgeval <span class="perc-badge">88%</span>
+        </button>
+
+        <button onclick="step('Poissy', '<img src=\'Poissy.jpg\' class=\'img-pop\'>On se pose ! Poissy, cité de Saint Louis, est l’endroit parfait pour faire un break bien mérité. On coupe le moteur, on se dégourdit les jambes et on profite de l\'instant avant de voir ce que la suite nous réserve...', 100)">
+            8. Étape : Poissy (BREAK) <span class="perc-badge">100%</span>
+        </button>
+    </div>
+
+    <p class="status">System encrypted • Admin access only</p>
+
+    <script>
+        firebase.initializeApp({ databaseURL: "https://missionnalya-default-rtdb.firebaseio.com/" });
+        const db = firebase.database();
+        function step(t, h, p) { 
+            db.ref('mission').set({title: t, html: h, progress: p, active: true}); 
+        }
+    </script>
+</body>
+</html>
